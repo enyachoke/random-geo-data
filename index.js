@@ -9,6 +9,19 @@ const geo_provider = {
     }
 };
 
+const array_of = function(times, generator) {
+    const result = [];
+ 
+    for (var i = 0; i < times; ++i) {
+        result.push(generator());
+    }
+ 
+    return result;
+};
+ 
+// Will generate array of five random timestamps
+const array_of_timestamps = array_of(200, casual._unix_time);
+
 casual.register_provider(geo_provider);
 casual.define('person', function (startPoint, radius, numberOfPoints) {
     return {
@@ -24,6 +37,10 @@ casual.define('person', function (startPoint, radius, numberOfPoints) {
 const people = [];
 for (const point of initClustersGeoPoints) {
     let person = casual.person(point, 10000, 200);
+    person.points.map((point)=>{
+        point.timestamp = casual.random_element(array_of_timestamps);
+        return point;
+    });
     people.push(person)
 }
 fs.writeFileSync('data.json', JSON.stringify(people));
